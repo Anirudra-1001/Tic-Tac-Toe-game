@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Tic Tac Toe Game</title>
+
+    <!-- CSS Styling -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #f2f2f2;
+        }
+
+        h1 {
+            margin-top: 20px;
+        }
+
+        #status, #timer {
+            font-size: 18px;
+            margin: 10px;
+        }
+
+        .board {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            gap: 10px;
+            justify-content: center;
+            margin: 30px auto;
+        }
+
+        .cell {
+            width: 100px;
+            height: 100px;
+            font-size: 36px;
+            cursor: pointer;
+            background-color: white;
+            border: 2px solid #333;
+        }
+
+        .cell:hover {
+            background-color: #e6e6e6;
+        }
+
+        button {
+            padding: 10px 25px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>Tic Tac Toe Game</h1>
+
+    <h3 id="status">Your Turn (X)</h3>
+    <h3 id="timer">Time Left: 10</h3>
+
+    <!-- Game Board -->
+    <div class="board">
+        <button class="cell" onclick="makeMove(0)"></button>
+        <button class="cell" onclick="makeMove(1)"></button>
+        <button class="cell" onclick="makeMove(2)"></button>
+        <button class="cell" onclick="makeMove(3)"></button>
+        <button class="cell" onclick="makeMove(4)"></button>
+        <button class="cell" onclick="makeMove(5)"></button>
+        <button class="cell" onclick="makeMove(6)"></button>
+        <button class="cell" onclick="makeMove(7)"></button>
+        <button class="cell" onclick="makeMove(8)"></button>
+    </div>
+
+    <button onclick="resetGame()">Restart Game</button>
+
+    <!-- JavaScript Logic -->
+    <script>
+        let board = ["", "", "", "", "", "", "", "", ""];
+        let currentPlayer = "X";   // X = User, O = Opponent
+        let gameOver = false;
+
+        let timeLeft = 10;
+        let timer;
+
+        const winPatterns = [
+            [0,1,2],[3,4,5],[6,7,8],
+            [0,3,6],[1,4,7],[2,5,8],
+            [0,4,8],[2,4,6]
+        ];
+
+        startTimer();
+
+        function startTimer() {
+            clearInterval(timer);
+            timeLeft = 10;
+            document.getElementById("timer").innerText = "Time Left: " + timeLeft;
+
+            timer = setInterval(function () {
+                timeLeft--;
+                document.getElementById("timer").innerText = "Time Left: " + timeLeft;
+
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    gameOver = true;
+
+                    if (currentPlayer === "X") {
+                        document.getElementById("status").innerText =
+                            "⏱ Time Up! SORRY! You LOSE 😢";
+                    } else {
+                        document.getElementById("status").innerText =
+                            "🎉 Time Up! HURRAY! You WIN 🎉";
+                    }
+                }
+            }, 1000);
+        }
+
+        function makeMove(index) {
+            if (board[index] === "" && !gameOver) {
+                board[index] = currentPlayer;
+                document.getElementsByClassName("cell")[index].innerText = currentPlayer;
+
+                if (checkWin()) {
+                    clearInterval(timer);
+                    gameOver = true;
+
+                    if (currentPlayer === "X") {
+                        document.getElementById("status").innerText =
+                            "🎉 HURRAY! You WIN 🎉";
+                    } else {
+                        document.getElementById("status").innerText =
+                            "😢 SORRY! You LOSE";
+                    }
+                } 
+                else if (!board.includes("")) {
+                    clearInterval(timer);
+                    document.getElementById("status").innerText =
+                        "🤝 It's a Draw!";
+                    gameOver = true;
+                } 
+                else {
+                    currentPlayer = currentPlayer === "X" ? "O" : "X";
+                    document.getElementById("status").innerText =
+                        currentPlayer === "X" ? "Your Turn (X)" : "Opponent's Turn (O)";
+                    startTimer();
+                }
+            }
+        }
+
+        function checkWin() {
+            return winPatterns.some(pattern =>
+                pattern.every(index => board[index] === currentPlayer)
+            );
+        }
+
+        function resetGame() {
+            clearInterval(timer);
+            board = ["", "", "", "", "", "", "", "", ""];
+            currentPlayer = "X";
+            gameOver = false;
+
+            document.getElementById("status").innerText = "Your Turn (X)";
+            document.getElementById("timer").innerText = "Time Left: 10";
+
+            let cells = document.getElementsByClassName("cell");
+            for (let i = 0; i < cells.length; i++) {
+                cells[i].innerText = "";
+            }
+
+            startTimer();
+        }
+    </script>
+
+</body>
+</html>
